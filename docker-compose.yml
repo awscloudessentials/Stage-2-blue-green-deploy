@@ -5,37 +5,36 @@ services:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "${PORT}:80"
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
+    environment:
+      - ACTIVE_POOL=${ACTIVE_POOL}
+      - BLUE_HOST=app_blue
+      - GREEN_HOST=app_green
+      - BLUE_PORT=8081
+      - GREEN_PORT=8082
     depends_on:
       - app_blue
       - app_green
-    environment:
-      - ACTIVE_POOL=${ACTIVE_POOL}
-      - BLUE_HOST=${BLUE_HOST}
-      - GREEN_HOST=${GREEN_HOST}
-      - BLUE_PORT=${PORT}
-      - GREEN_PORT=${PORT}
-    volumes:
-      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
     command: >
-     /bin/bash -c "
-      envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf 
-      nginx -t &&
+      /bin/bash -c "
+        envsubst '$$ACTIVE_POOL $$BLUE_HOST $$GREEN_HOST $$BLUE_PORT $$GREEN_PORT' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf &&
         nginx -g 'daemon off;'
       "
 
   app_blue:
     image: ${BLUE_IMAGE}
-    container_name: ${BLUE_HOST}
+    container_name: app_blue
     environment:
       - RELEASE_ID=${RELEASE_ID_BLUE}
     ports:
-      - "8081:${BLUE_PORT}"
+      - "8081:3000"
 
   app_green:
     image: ${GREEN_IMAGE}
-    container_name: ${GREEN_HOST}
+    container_name: app_green
     environment:
       - RELEASE_ID=${RELEASE_ID_GREEN}
     ports:
-      - "8082:${GREEN_PORT}"
+      - "8082:3000"
