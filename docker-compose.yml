@@ -18,8 +18,13 @@ services:
     volumes:
       - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
     command: >
-      /bin/bash -c "
-        envsubst '\$ACTIVE_POOL \$BLUE_HOST \$GREEN_HOST \$BLUE_PORT \$GREEN_PORT' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf &&
+     /bin/bash -c "
+      rm -f /etc/nginx/conf.d/default.conf &&
+      echo ' Substituting Nginx environment variables...' &&
+      echo 'ACTIVE_POOL=$ACTIVE_POOL, BLUE_HOST=$BLUE_HOST, GREEN_HOST=$GREEN_HOST, BLUE_PORT=$BLUE_PORT, GREEN_PORT=$GREEN_PORT' &&
+      envsubst '\$ACTIVE_POOL \$BLUE_HOST \$GREEN_HOST \$BLUE_PORT \$GREEN_PORT' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf &&
+      echo 'Substitution complete. Testing config...' &&
+      nginx -t &&
         nginx -g 'daemon off;'
       "
 
