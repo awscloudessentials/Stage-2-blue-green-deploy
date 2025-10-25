@@ -28,13 +28,15 @@ services:
     container_name: app_blue
     environment:
       - RELEASE_ID=${RELEASE_ID_BLUE}
+      - PORT=${PORT}
     ports:
-      - "8081:3000"
+      - "8081:${PORT}"
 
   app_green:
     image: ${GREEN_IMAGE}
     container_name: app_green
     environment:
       - RELEASE_ID=${RELEASE_ID_GREEN}
+      - PORT=${PORT}
     ports:
-      - "8082:3000"
+      - "8082:${PORT}"
