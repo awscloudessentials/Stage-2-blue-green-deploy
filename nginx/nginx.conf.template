@@ -3,8 +3,8 @@ events { worker_connections 1024; }
 
 http {
     upstream backend {
-        server ${BLUE_HOST}:${BLUE_PORT} max_fails=2 fail_timeout=5s;
-        server ${GREEN_HOST}:${GREEN_PORT} backup;
+        server ${BLUE_HOST}:${PORT} max_fails=2 fail_timeout=5s;
+        server ${GREEN_HOST}:${PORT} backup;
     }
 
     server {
